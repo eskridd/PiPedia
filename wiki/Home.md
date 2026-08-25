@@ -8,7 +8,8 @@ If you can type, you can publish here.
 
 | Category | Articles |
 |---|---|
-| [[Tech]] | [[Linux]], [[Kernel]], [[Git]], [[Markdown]], [[Open-Source]] |
+| [[Tech]] | [[Linux]], [[Kernel]], [[Git]], [[World-Wide-Web]], and seven more |
+| [[Math]] | [[About-Pi]], [[Fibonacci-Sequence]], [[Golden-Ratio]], [[Prime-Numbers]], [[Number-Systems]] |
 | [[Birds]] | [[Peregrine-Falcon]], [[Barn-Owl]], [[Emperor-Penguin]], [[Ruby-Throated-Hummingbird]], [[Common-Raven]] |
 | [[Wild-Animals]] | [[Red-Fox]], [[African-Elephant]], [[Snow-Leopard]], [[Honey-Bee]], [[Tardigrade]] |
 | [[Sea-Life]] | [[Blue-Whale]], [[Great-White-Shark]], [[Common-Octopus]], [[Sea-Otter]], [[Mantis-Shrimp]] |
@@ -17,8 +18,9 @@ If you can type, you can publish here.
 
 | Article | What it is |
 |---|---|
-| [[About-Pi]] | The star of the show: history, formulas, and fun facts about π |
 | [[How-to-Contribute]] | Add or edit an article in two minutes, no setup or fork required |
+| [[Style-Guide]] | The writing habits that make articles fit the site |
+| [[FAQ]] | Answers about using and improving the wiki |
 | [[Sandbox]] | A practice page you can edit however you like |
 
 ## Quick links

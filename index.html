@@ -6,6 +6,10 @@
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data: https://avatars.githubusercontent.com; connect-src 'self' https://api.github.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="description" content="A tiny wiki anyone can edit. Articles are plain markdown files, and the site runs entirely on GitHub Pages.">
+<meta property="og:title" content="PiPedia · The Free π Encyclopedia">
+<meta property="og:description" content="A tiny wiki anyone can edit. Articles are plain markdown files, and the site runs entirely on GitHub Pages.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
 <script src="js/theme-init.js"></script>
 <title>PiPedia · The Free π Encyclopedia</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ccircle%20cx='50'%20cy='50'%20r='46'%20fill='%237c3aed'/%3E%3Ccircle%20cx='50'%20cy='50'%20r='46'%20fill='none'%20stroke='%23fbbf24'%20stroke-width='6'/%3E%3Ctext%20x='50'%20y='70'%20font-size='58'%20text-anchor='middle'%20fill='%23fff'%20font-family='Georgia,serif'%3E%CF%80%3C/text%3E%3C/svg%3E">
@@ -29,9 +33,9 @@
 
   <div class="searchwrap">
     <svg class="search-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-    <input id="searchInput" type="search" placeholder="Search PiPedia…" autocomplete="off" spellcheck="false">
+    <input id="searchInput" type="search" placeholder="Search PiPedia…" autocomplete="off" spellcheck="false" aria-label="Search PiPedia">
     <kbd>/</kbd>
-    <div id="searchResults" hidden></div>
+    <div id="searchResults" role="listbox" aria-label="Search results" hidden></div>
   </div>
 
   <nav class="actions">
@@ -58,6 +62,8 @@
         <li><a href="#/all">All articles <span class="badge" id="countBadge"></span></a></li>
         <li><a href="#" id="randomLink">Random article</a></li>
         <li><a href="#/How-to-Contribute">How to contribute</a></li>
+        <li><a href="#/Style-Guide">Style guide</a></li>
+        <li><a href="#/FAQ">FAQ</a></li>
         <li><a href="#/Sandbox">Sandbox</a></li>
       </ul>
     </div>
@@ -67,6 +73,7 @@
         <li><a href="#/Birds">Birds</a></li>
         <li><a href="#/Wild-Animals">Wild animals</a></li>
         <li><a href="#/Sea-Life">Sea life</a></li>
+        <li><a href="#/Math">Math</a></li>
         <li><a href="#/Tech">Tech</a></li>
         <li><a href="#/About-Pi">About π</a></li>
       </ul>

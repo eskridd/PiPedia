@@ -67,6 +67,11 @@
     return list.filter((v) => v && !seen.has(v) && seen.add(v));
   };
 
+  function resolveName(raw) {
+    const lower = String(raw).toLowerCase();
+    return state.pages.find((p) => p.toLowerCase() === lower) || null;
+  }
+
   async function fetchText(url) {
     try {
       const r = await fetch(url);
@@ -185,6 +190,46 @@
     });
   }
 
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {}
+    try {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      area.remove();
+      return ok;
+    } catch {}
+    return false;
+  }
+
+  function decorateCode(root) {
+    root.querySelectorAll("pre > code").forEach((block) => {
+      const pre = block.parentElement;
+      if (pre.querySelector(".copy-btn")) return;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "copy-btn";
+      btn.textContent = "Copy";
+      btn.setAttribute("aria-label", "Copy code to clipboard");
+      btn.addEventListener("click", async () => {
+        if (await copyText(block.innerText)) {
+          btn.textContent = "Copied";
+          setTimeout(() => {
+            btn.textContent = "Copy";
+          }, 1400);
+        }
+      });
+      pre.appendChild(btn);
+    });
+  }
+
   function renderMath(root) {
     if (typeof renderMathInElement !== "function") return;
     try {
@@ -249,25 +294,63 @@
     if (link) link.classList.add("active");
   }
 
+  const EDIT_CACHE_KEY = "pipedia-edit-cache";
+  const EDIT_CACHE_TTL = 30 * 60 * 1000;
+
+  function readEditCache(name) {
+    try {
+      const all = JSON.parse(sessionStorage.getItem(EDIT_CACHE_KEY) || "{}");
+      const hit = all[name];
+      if (hit && Date.now() - hit.at < EDIT_CACHE_TTL) return hit.data;
+    } catch {}
+    return null;
+  }
+
+  function writeEditCache(name, data) {
+    try {
+      const all = JSON.parse(sessionStorage.getItem(EDIT_CACHE_KEY) || "{}");
+      all[name] = { at: Date.now(), data };
+      sessionStorage.setItem(EDIT_CACHE_KEY, JSON.stringify(all));
+    } catch {}
+  }
+
+  function paintLastEdit(data, metaEl) {
+    const when = new Date(data.date).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
+    const avatar = data.avatar ? `<img class="avatar" src="${esc(data.avatar)}&s=40" alt="">` : "";
+    const who = data.profile
+      ? `<a href="${esc(data.profile)}" target="_blank" rel="noopener">${avatar}${esc(data.author)}</a>`
+      : `${avatar}${esc(data.author)}`;
+    metaEl.innerHTML = `<span>Last edited <a href="${esc(data.commitUrl)}" target="_blank" rel="noopener">${when}</a> by ${who}</span>`;
+    addDot(metaEl);
+  }
+
   async function loadLastEdit(name, metaEl) {
+    const cached = readEditCache(name);
+    if (cached) {
+      paintLastEdit(cached, metaEl);
+      return;
+    }
     try {
       const r = await fetch(
         `https://api.github.com/repos/${CFG.owner}/${CFG.repo}/commits?path=${gh.file(name)}&per_page=1`
       );
       if (!r.ok) return;
-      const data = await r.json();
-      if (!Array.isArray(data) || !data.length) return;
-      const c = data[0];
-      const date = new Date(c.commit.committer.date);
-      const when = date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-      const author = c.author ? c.author.login : c.commit.author.name;
-      const avatar = c.author && c.author.avatar_url ? `<img class="avatar" src="${esc(c.author.avatar_url)}&s=40" alt="">` : "";
-      const who = c.author
-        ? `<a href="${esc(c.author.html_url)}" target="_blank" rel="noopener">${avatar}${esc(author)}</a>`
-        : `${avatar}${esc(author)}`;
-      const sha = `<a href="${esc(c.html_url)}" target="_blank" rel="noopener">${when}</a>`;
-      metaEl.innerHTML = `<span>Last edited ${sha} by ${who}</span>`;
-      addDot(metaEl);
+      const list = await r.json();
+      if (!Array.isArray(list) || !list.length) return;
+      const c = list[0];
+      const data = {
+        date: c.commit.committer.date,
+        author: c.author ? c.author.login : c.commit.author.name,
+        avatar: c.author && c.author.avatar_url ? c.author.avatar_url : "",
+        profile: c.author ? c.author.html_url : "",
+        commitUrl: c.html_url
+      };
+      writeEditCache(name, data);
+      paintLastEdit(data, metaEl);
     } catch {}
   }
 
@@ -283,9 +366,14 @@
 
   function showPage(rawName) {
     const my = ++state.seq;
-    const attempts = variantsOf(rawName);
+    const candidates = [];
+    const push = (n) => {
+      if (n && !candidates.some((c) => c.toLowerCase() === String(n).toLowerCase())) candidates.push(n);
+    };
+    push(resolveName(rawName));
+    variantsOf(rawName).forEach(push);
     (async () => {
-      for (const name of attempts) {
+      for (const name of candidates) {
         if (my !== state.seq) return;
         const md = await getMarkdown(name);
         if (my !== state.seq) return;
@@ -293,7 +381,7 @@
         renderArticle(name, md);
         return;
       }
-      if (my === state.seq) renderNotFound(attempts[0]);
+      if (my === state.seq) renderNotFound(rawName);
     })();
   }
 
@@ -327,6 +415,7 @@
     setPageBar(true);
     postProcess(els.article);
     highlightCode(els.article);
+    decorateCode(els.article);
     renderMath(els.article);
     buildToc(els.article);
     els.sourceView.textContent = md;
@@ -353,6 +442,7 @@
     document.title = `Not found · ${CFG.title}`;
     els.crumb.innerHTML = `wiki / <b>${esc(name)}</b>`;
     els.article.className = "";
+    els.article.innerHTML = "";
     buildToc(els.article);
     const suggestions = suggestPages(name);
     els.article.innerHTML = `
@@ -406,6 +496,8 @@
     setPageBar(false);
     document.title = `All articles · ${CFG.title}`;
     els.crumb.innerHTML = `wiki / <b>All articles</b>`;
+    els.article.className = "";
+    els.article.innerHTML = "";
     buildToc(els.article);
     const groups = {};
     state.pages.forEach((p) => {
@@ -487,7 +579,7 @@
       pos = e.text.indexOf(q);
       if (pos >= 0) score += 20;
       else if (score === 0) continue;
-      results.push({ title: e.title, score, snip: pos >= 0 ? snippet(e.text, pos, q.length) : "" });
+      results.push({ title: e.title, score, snip: pos >= 0 ? snippet(e.raw, pos, q.length) : "" });
     }
     results.sort((a, b) => b.score - a.score);
     showResults(results.slice(0, 12), query);
@@ -503,7 +595,7 @@
       els.searchResults.innerHTML = results
         .map(
           (r, i) =>
-            `<a class="sr-item" data-page="${esc(r.title)}" href="#/${encodeURIComponent(r.title)}">` +
+            `<a class="sr-item" id="sr-opt-${i}" role="option" aria-selected="false" data-page="${esc(r.title)}" href="#/${encodeURIComponent(r.title)}">` +
             `<span class="t">${markSnippet(r.title, query)}</span>` +
             (r.snip ? `<span class="s">${markSnippet(r.snip, query)}</span>` : "") +
             `</a>`
@@ -512,21 +604,29 @@
     }
     els.searchResults.hidden = false;
     els.searchInput.setAttribute("aria-expanded", "true");
+    els.searchInput.removeAttribute("aria-activedescendant");
   }
 
   function closeSearch() {
     els.searchResults.hidden = true;
     els.searchInput.setAttribute("aria-expanded", "false");
+    els.searchInput.removeAttribute("aria-activedescendant");
     state.selIdx = -1;
   }
 
   function moveSel(dir) {
     const items = Array.from(els.searchResults.querySelectorAll(".sr-item"));
     if (!items.length) return;
-    items.forEach((i) => i.classList.remove("sel"));
+    items.forEach((item) => {
+      item.classList.remove("sel");
+      item.setAttribute("aria-selected", "false");
+    });
     state.selIdx = (state.selIdx + dir + items.length) % items.length;
-    items[state.selIdx].classList.add("sel");
-    items[state.selIdx].scrollIntoView({ block: "nearest" });
+    const current = items[state.selIdx];
+    current.classList.add("sel");
+    current.setAttribute("aria-selected", "true");
+    els.searchInput.setAttribute("aria-activedescendant", current.id);
+    current.scrollIntoView({ block: "nearest" });
   }
 
   function goRandom() {
@@ -587,13 +687,13 @@
   }
 
   function highlightNav(page) {
-    const here = "#/" + page;
+    const here = ("#/" + page).toLowerCase();
     document.querySelectorAll(".navlist a").forEach((a) => {
       let href = a.getAttribute("href") || "";
       try {
         href = decodeURIComponent(href);
       } catch {}
-      a.classList.toggle("active-link", href !== "#" && href === here);
+      a.classList.toggle("active-link", href !== "#" && href.toLowerCase() === here);
     });
   }
 
@@ -605,6 +705,8 @@
       `<a href="#/Birds">Birds</a>` +
       `<a href="#/Wild-Animals">Wild animals</a>` +
       `<a href="#/Sea-Life">Sea life</a>` +
+      `<a href="#/Math">Math</a>` +
+      `<a href="#/FAQ">FAQ</a>` +
       `<a href="#/How-to-Contribute">Contribute</a>` +
       `</div>` +
       `Powered by <span class="pi-foot">π</span> · ${state.pages.length} article${state.pages.length === 1 ? "" : "s"} · ` +
@@ -631,6 +733,8 @@
     let debounceTimer;
     els.searchInput.setAttribute("role", "combobox");
     els.searchInput.setAttribute("aria-expanded", "false");
+    els.searchInput.setAttribute("aria-controls", "searchResults");
+    els.searchInput.setAttribute("aria-autocomplete", "list");
     els.searchInput.addEventListener("input", () => {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => runSearch(els.searchInput.value), 130);
@@ -662,7 +766,15 @@
     els.searchResults.addEventListener("click", () => setTimeout(closeSearch, 50));
 
     document.addEventListener("keydown", (e) => {
-      if (e.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName) && !e.ctrlKey && !e.metaKey) {
+      const active = document.activeElement;
+      if (
+        e.key === "/" &&
+        active &&
+        !["INPUT", "TEXTAREA"].includes(active.tagName) &&
+        !active.isContentEditable &&
+        !e.ctrlKey &&
+        !e.metaKey
+      ) {
         e.preventDefault();
         els.searchInput.focus();
       }
