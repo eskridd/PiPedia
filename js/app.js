@@ -113,10 +113,14 @@
     s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
   function renderHtml(md) {
-    const { src, mathStore } = prepareMarkdown(md);
-    let html = marked.parse(src, { gfm: true, breaks: true });
-    html = html.replace(/%%PIPIMATH(\d+)%%/g, (_, i) => escapeHtmlForMath(mathStore[i]));
-    return DOMPurify.sanitize(html);
+    try {
+      const { src, mathStore } = prepareMarkdown(md);
+      let html = marked.parse(src, { gfm: true, breaks: true });
+      html = html.replace(/%%PIPIMATH(\d+)%%/g, (_, i) => escapeHtmlForMath(mathStore[i]));
+      return DOMPurify.sanitize(html);
+    } catch {
+      return '<pre class="raw-fallback">' + escapeHtmlForMath(md) + "</pre>";
+    }
   }
 
   function slugify(text, used) {
