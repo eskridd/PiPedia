@@ -1,0 +1,41 @@
+name: Build wiki index
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - "wiki/**"
+      - "scripts/build-index.js"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wiki-index-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Rebuild wiki/pages.json
+        run: node scripts/build-index.js
+
+      - name: Commit updated index
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add wiki/pages.json
+          if git diff --cached --quiet; then
+            echo "Index already up to date"
+          else
+            git commit -m "chore: rebuild wiki index"
+            git push
+          fi
