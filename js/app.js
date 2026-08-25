@@ -32,8 +32,22 @@
     pages: [],
     cache: new Map(),
     index: null,
+    indexAt: 0,
+    manifestAt: 0,
+    seq: 0,
     tocObserver: null,
     selIdx: -1
+  };
+
+  const HLJS_THEMES = {
+    light: {
+      href: "https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/styles/github.min.css",
+      integrity: "sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L"
+    },
+    dark: {
+      href: "https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/styles/github-dark.min.css",
+      integrity: "sha384-wH75j6z1lH97ZOpMOInqhgKzFkAInZPPSPlZpYKYTOqsaizPvhQZmAtLcPKXpLyH"
+    }
   };
 
   const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -70,7 +84,9 @@
     return txt;
   }
 
-  async function loadManifest() {
+  async function loadManifest(force) {
+    const fresh = Date.now() - state.manifestAt < 5 * 60 * 1000;
+    if (state.pages.length && fresh && !force) return;
     let pages = null;
     try {
       const r = await fetch(`${CFG.wikiDir}/pages.json`);
@@ -78,6 +94,7 @@
     } catch {}
     state.pages = Array.isArray(pages) && pages.length ? pages : ["Home"];
     if (!state.pages.includes("Home")) state.pages.unshift("Home");
+    state.manifestAt = Date.now();
     els.countBadge.textContent = state.pages.length;
     renderFoot();
   }
@@ -265,15 +282,18 @@
   }
 
   function showPage(rawName) {
+    const my = ++state.seq;
     const attempts = variantsOf(rawName);
     (async () => {
       for (const name of attempts) {
+        if (my !== state.seq) return;
         const md = await getMarkdown(name);
+        if (my !== state.seq) return;
         if (md === null) continue;
         renderArticle(name, md);
         return;
       }
-      renderNotFound(attempts[0]);
+      if (my === state.seq) renderNotFound(attempts[0]);
     })();
   }
 
@@ -304,6 +324,7 @@
     els.crumb.innerHTML = `wiki / <b>${esc(name)}</b>`;
     els.article.className = "";
     els.article.innerHTML = renderHtml(md);
+    setPageBar(true);
     postProcess(els.article);
     highlightCode(els.article);
     renderMath(els.article);
@@ -328,6 +349,7 @@
     closeSearch();
     hideSource();
     clearMetaBar();
+    setPageBar(false);
     document.title = `Not found · ${CFG.title}`;
     els.crumb.innerHTML = `wiki / <b>${esc(name)}</b>`;
     els.article.className = "";
@@ -381,6 +403,7 @@
     closeSearch();
     hideSource();
     clearMetaBar();
+    setPageBar(false);
     document.title = `All articles · ${CFG.title}`;
     els.crumb.innerHTML = `wiki / <b>All articles</b>`;
     buildToc(els.article);
@@ -422,7 +445,8 @@
   }
 
   async function ensureIndex() {
-    if (state.index) return state.index;
+    if (state.index && Date.now() - state.indexAt < 5 * 60 * 1000) return state.index;
+    await loadManifest(true);
     const entries = await Promise.all(
       state.pages.map(async (p) => {
         let raw = state.cache.get(p);
@@ -431,6 +455,7 @@
       })
     );
     state.index = entries;
+    state.indexAt = Date.now();
     return entries;
   }
 
@@ -486,10 +511,12 @@
         .join("");
     }
     els.searchResults.hidden = false;
+    els.searchInput.setAttribute("aria-expanded", "true");
   }
 
   function closeSearch() {
     els.searchResults.hidden = true;
+    els.searchInput.setAttribute("aria-expanded", "false");
     state.selIdx = -1;
   }
 
@@ -518,16 +545,27 @@
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("pipedia-theme", theme);
     if (els.hljsCss) {
-      els.hljsCss.href =
-        `https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.9.0/styles/` +
-        (theme === "dark" ? "github-dark.min.css" : "github.min.css");
+      const t = HLJS_THEMES[theme] || HLJS_THEMES.light;
+      els.hljsCss.href = t.href;
+      els.hljsCss.integrity = t.integrity;
     }
+  }
+
+  function setPageBar(visible) {
+    [els.editLink, els.historyLink, els.sourceBtn].forEach((el) => {
+      el.style.visibility = visible ? "" : "hidden";
+    });
   }
 
   function route() {
     const hash = location.hash;
     if (hash && !hash.startsWith("#/")) return;
-    let page = decodeURIComponent(hash.replace(/^#\//, "")).trim();
+    let page;
+    try {
+      page = decodeURIComponent(hash.replace(/^#\//, "")).trim();
+    } catch {
+      page = hash.replace(/^#\//, "").trim();
+    }
     if (!page) page = "Home";
     highlightNav(page);
     if (page === "all") renderAll();
@@ -537,7 +575,10 @@
   function highlightNav(page) {
     const here = "#/" + page;
     document.querySelectorAll(".navlist a").forEach((a) => {
-      const href = a.getAttribute("href") || "";
+      let href = a.getAttribute("href") || "";
+      try {
+        href = decodeURIComponent(href);
+      } catch {}
       a.classList.toggle("active-link", href !== "#" && href === here);
     });
   }
@@ -574,6 +615,8 @@
     els.sourceBtn.addEventListener("click", toggleSource);
 
     let debounceTimer;
+    els.searchInput.setAttribute("role", "combobox");
+    els.searchInput.setAttribute("aria-expanded", "false");
     els.searchInput.addEventListener("input", () => {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => runSearch(els.searchInput.value), 130);

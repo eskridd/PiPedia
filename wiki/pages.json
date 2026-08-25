@@ -7,6 +7,7 @@
   "Common-Octopus",
   "Common-Raven",
   "Emperor-Penguin",
+  "Encryption",
   "Git",
   "Great-White-Shark",
   "Home",
@@ -16,9 +17,12 @@
   "Linux",
   "Mantis-Shrimp",
   "Markdown",
+  "Number-Systems",
   "Open-Source",
+  "Password-Security",
   "Peregrine-Falcon",
   "Red-Fox",
+  "Regular-Expressions",
   "Ruby-Throated-Hummingbird",
   "Sandbox",
   "Sea-Life",
@@ -26,5 +30,7 @@
   "Snow-Leopard",
   "Tardigrade",
   "Tech",
-  "Wild-Animals"
+  "Unicode",
+  "Wild-Animals",
+  "World-Wide-Web"
 ]

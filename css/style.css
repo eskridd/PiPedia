@@ -414,4 +414,5 @@ ul.page-list a:hover { text-decoration: underline; }
   .topbar, #sidebar, .page-bar, .cfg-banner, .foot { display: none !important; }
   .shell { display: block; padding: 0; }
   #article { border: none; padding: 0; }
+  #article .pager, #sourceView, #searchResults { display: none !important; }
 }
