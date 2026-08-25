@@ -16,6 +16,10 @@ A small GitHub Action rebuilds the article index (`wiki/pages.json`) whenever so
 
 So contributing really is just: click, write markdown, submit.
 
+## AI policy
+
+AI tools are welcome for research and for extending drafts you personally review, but whole AI-generated articles and AI passages with misleading or false information will be deleted. See [CONTRIBUTING.md](CONTRIBUTING.md) for the details.
+
 ## Put your own copy online
 
 1. Fork or use this repository
