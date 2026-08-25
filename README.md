@@ -1,6 +1,6 @@
 # PiPedia
 
-A tiny wiki that anyone can edit. Every article is a plain Markdown file, the whole site is static, and hosting is free on GitHub Pages. No server, no database, no build step to babysit.
+A tiny wiki that anyone can edit. Every article is a plain Markdown file.
 
 ## How it works
 

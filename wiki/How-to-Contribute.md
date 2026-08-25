@@ -58,7 +58,7 @@ You may use AI tools for research and to help extend drafts that you then review
 
 ## What happens after I contribute?
 
-PiPedia is fully static: no database, no server, just files. Whenever someone adds or removes a `.md` file, whether through an edit or an auto-published issue, a small GitHub Action regenerates `wiki/pages.json`, which is simply the list of articles powering search and navigation.
+Whenever someone adds or removes a `.md` file, whether through an edit or an auto-published issue, a small GitHub Action regenerates `wiki/pages.json`, which is simply the list of articles powering search and navigation.
 
 If something does not show up within a few minutes, peek at the repository's **Actions** tab and check that the index job ran cleanly.
 

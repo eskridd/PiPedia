@@ -12,7 +12,7 @@ No. Two of the three ways to contribute never touch a command line: open an issu
 
 ### Is this really free?
 
-Yes. Articles are plain Markdown files in a git repository and the site is served by GitHub Pages. No ads, no tracking, no accounts, and everything is MIT licensed.
+Yes. Reading and writing here cost nothing, there are no ads, and no one watches what you browse. The code and content are MIT licensed as well.
 
 ### Why is my brand new article not showing up yet?
 
