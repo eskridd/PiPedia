@@ -1,8 +1,8 @@
 # Welcome to PiPedia
 
-PiPedia is a little encyclopedia that anyone can edit. Every article is a plain Markdown file, and the whole site runs on GitHub Pages. There is no server to manage and nothing to install.
+PiPedia is a small encyclopedia that anyone can edit. Every article is a plain Markdown file in this repository, and GitHub Pages serves the whole site for free. No server to babysit, no database, nothing to install.
 
-If you can type, you can publish here.
+If you can type, you can publish here. Click **Edit** on any page and take it from there.
 
 ## Browse by category
 
