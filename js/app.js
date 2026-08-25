@@ -541,9 +541,23 @@
     window.open(gh.newPage(title), "_blank", "noopener");
   }
 
+  function preferredTheme() {
+    let saved = null;
+    try {
+      saved = localStorage.getItem("pipedia-theme");
+    } catch {}
+    if (saved === "light" || saved === "dark") return saved;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }
+
   function applyTheme(theme) {
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem("pipedia-theme", theme);
+    try {
+      localStorage.setItem("pipedia-theme", theme);
+    } catch {}
+    if (els.themeBtn) els.themeBtn.setAttribute("aria-pressed", String(theme === "dark"));
     if (els.hljsCss) {
       const t = HLJS_THEMES[theme] || HLJS_THEMES.light;
       els.hljsCss.href = t.href;
@@ -662,7 +676,7 @@
     els.brandName.textContent = CFG.title;
     els.brandTag.textContent = CFG.tagline;
     els.ghLink.href = gh.repo;
-    applyTheme(localStorage.getItem("pipedia-theme") || "dark");
+    applyTheme(preferredTheme());
     bindEvents();
     loadManifest().then(route);
   }
