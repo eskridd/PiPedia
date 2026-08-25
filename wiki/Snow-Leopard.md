@@ -21,6 +21,8 @@ Unlike lions, tigers, and leopards, snow leopards cannot roar. Their voice box l
 
 Snow leopards hunt blue sheep, ibex, and marmots, stalking downhill from above in bounds of up to 15 meters. They are so elusive that population estimates rely mostly on camera traps, genetic samples from scat, and tracks in snow. The best current guess puts the wild population somewhere between roughly 4,000 and 6,500 adults.
 
+To survive in some of the most unforgiving environments on Earth, the "Ghost of the Mountains" relies on a remarkable set of physical adaptations and vast, remote territories.
+
 ## See also
 
 - [[Red-Fox]], a smaller neighbor of the high country
