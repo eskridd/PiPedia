@@ -4,7 +4,15 @@ PiPedia is a little encyclopedia that anyone can edit. Every article is a plain 
 
 If you can type, you can publish here.
 
-## Start exploring
+## Browse by category
+
+| Category | Articles |
+|---|---|
+| [[Birds]] | [[Peregrine-Falcon]], [[Barn-Owl]], [[Emperor-Penguin]], [[Ruby-Throated-Hummingbird]], [[Common-Raven]] |
+| [[Wild-Animals]] | [[Red-Fox]], [[African-Elephant]], [[Snow-Leopard]], [[Honey-Bee]], [[Tardigrade]] |
+| [[Sea-Life]] | [[Blue-Whale]], [[Great-White-Shark]], [[Common-Octopus]], [[Sea-Otter]], [[Mantis-Shrimp]] |
+
+## Start elsewhere
 
 | Article | What it is |
 |---|---|

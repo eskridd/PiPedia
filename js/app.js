@@ -301,7 +301,7 @@
     const bar = document.createElement("div");
     bar.className = "meta-line";
     bar.innerHTML =
-      `<span>${wordCount(md).toLocaleString()} words</span>` +
+      `<span>${wordCount(md).toLocaleString()} words · about ${Math.max(1, Math.round(wordCount(md) / 200))} min read</span>` +
       `<span>· <a href="${esc(gh.blob(name))}" target="_blank" rel="noopener">view on GitHub</a></span>`;
     els.article.parentNode.insertBefore(bar, els.article);
 
@@ -513,13 +513,29 @@
     if (hash && !hash.startsWith("#/")) return;
     let page = decodeURIComponent(hash.replace(/^#\//, "")).trim();
     if (!page) page = "Home";
-    document.querySelectorAll(".navlist a").forEach((a) => a.classList.toggle("active-link", false));
+    highlightNav(page);
     if (page === "all") renderAll();
     else showPage(page);
   }
 
+  function highlightNav(page) {
+    const here = "#/" + page;
+    document.querySelectorAll(".navlist a").forEach((a) => {
+      const href = a.getAttribute("href") || "";
+      a.classList.toggle("active-link", href !== "#" && href === here);
+    });
+  }
+
   function renderFoot() {
     els.foot.innerHTML =
+      `<div class="foot-links">` +
+      `<a href="#/Home">Main page</a>` +
+      `<a href="#/all">All articles</a>` +
+      `<a href="#/Birds">Birds</a>` +
+      `<a href="#/Wild-Animals">Wild animals</a>` +
+      `<a href="#/Sea-Life">Sea life</a>` +
+      `<a href="#/How-to-Contribute">Contribute</a>` +
+      `</div>` +
       `Powered by <span class="pi-foot">π</span> · ${state.pages.length} article${state.pages.length === 1 ? "" : "s"} · ` +
       `Hosted on GitHub Pages · <a href="${esc(gh.repo)}" target="_blank" rel="noopener">Contribute on GitHub</a>`;
   }

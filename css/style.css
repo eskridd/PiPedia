@@ -200,7 +200,8 @@ body {
   color: var(--primary);
 }
 .navlist a:hover { text-decoration: underline; }
-.navlist a.active-link { font-weight: 600; }
+.navlist a.active-link { font-weight: 600; color: var(--text); }
+.navlist a.active-link:hover { text-decoration: underline; }
 
 .badge {
   display: inline-block;
@@ -363,6 +364,9 @@ ul.page-list a:hover { text-decoration: underline; }
 }
 .foot a { color: var(--muted); }
 .foot .pi-foot { font-family: "Source Serif 4", Georgia, serif; color: var(--pi-bg); font-weight: 700; }
+
+.foot-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; margin-bottom: 6px; }
+.foot-links a:hover { color: var(--primary); text-decoration: underline; }
 
 @media (max-width: 920px) {
   .brand-text small { display: none; }
