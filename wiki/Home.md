@@ -8,6 +8,7 @@ If you can type, you can publish here.
 
 | Category | Articles |
 |---|---|
+| [[Tech]] | [[Linux]], [[Kernel]], [[Git]], [[Markdown]], [[Open-Source]] |
 | [[Birds]] | [[Peregrine-Falcon]], [[Barn-Owl]], [[Emperor-Penguin]], [[Ruby-Throated-Hummingbird]], [[Common-Raven]] |
 | [[Wild-Animals]] | [[Red-Fox]], [[African-Elephant]], [[Snow-Leopard]], [[Honey-Bee]], [[Tardigrade]] |
 | [[Sea-Life]] | [[Blue-Whale]], [[Great-White-Shark]], [[Common-Octopus]], [[Sea-Otter]], [[Mantis-Shrimp]] |
@@ -17,8 +18,7 @@ If you can type, you can publish here.
 | Article | What it is |
 |---|---|
 | [[About-Pi]] | The star of the show: history, formulas, and fun facts about π |
-| [[How-to-Contribute]] | Add or edit an article in two minutes, no setup required |
-| [[Setup-Guide]] | Put your own copy of PiPedia online in about five minutes |
+| [[How-to-Contribute]] | Add or edit an article in two minutes, no setup or fork required |
 | [[Sandbox]] | A practice page you can edit however you like |
 
 ## Quick links

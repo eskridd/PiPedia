@@ -281,6 +281,21 @@
     document.querySelectorAll(".meta-line").forEach((el) => el.remove());
   }
 
+  function appendPager(name) {
+    const list = [...state.pages].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    if (list.length < 2 || !list.includes(name)) return;
+    const i = list.indexOf(name);
+    const prev = list[(i - 1 + list.length) % list.length];
+    const next = list[(i + 1) % list.length];
+    const nav = document.createElement("nav");
+    nav.className = "pager";
+    nav.innerHTML =
+      `<a class="p-side" href="#/${encodeURIComponent(prev)}"><span>Previous</span>${esc(prev)}</a>` +
+      `<a class="p-all" href="#/all">All articles</a>` +
+      `<a class="p-side" href="#/${encodeURIComponent(next)}"><span>Next</span>${esc(next)}</a>`;
+    els.article.appendChild(nav);
+  }
+
   function renderArticle(name, md) {
     closeSearch();
     hideSource();
@@ -306,6 +321,7 @@
     els.article.parentNode.insertBefore(bar, els.article);
 
     loadLastEdit(name, bar);
+    appendPager(name);
     window.scrollTo({ top: 0 });
   }
   function renderNotFound(name) {

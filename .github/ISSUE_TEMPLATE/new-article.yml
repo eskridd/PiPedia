@@ -1,0 +1,27 @@
+name: New article
+description: Publish a new PiPedia page without cloning or forking anything
+title: "New article"
+labels: ["article"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Write your article in Markdown below and a bot will publish it to the site automatically within about a minute, with you credited as the author.
+        Wiki links like `[[Page-Name]]`, math with `$...$` and `$$...$$`, tables, and code blocks all work.
+  - type: input
+    id: title
+    attributes:
+      label: Article title
+      description: Also becomes the file name. Example: Deep Sea Fish
+    validations:
+      required: true
+  - type: textarea
+    id: article
+    attributes:
+      label: Your article
+      description: Full article in Markdown, starting with a # heading.
+      placeholder: |
+        # Deep Sea Fish
+        Down where sunlight never reaches...
+    validations:
+      required: true
