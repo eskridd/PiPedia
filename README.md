@@ -20,14 +20,6 @@ So contributing really is just: click, write markdown, submit.
 
 AI tools are welcome for research and for extending drafts you personally review, but whole AI-generated articles and AI passages with misleading or false information will be deleted. See [CONTRIBUTING.md](CONTRIBUTING.md) for the details.
 
-## Put your own copy online
-
-1. Fork or use this repository
-2. Edit `js/config.js` and set `owner` and `repo` to yours
-3. In the repo settings, open **Pages** and deploy from branch `main`, folder `/ (root)`
-
-Your wiki appears at `https://YOUR_USERNAME.github.io/PiPedia/` in a minute or two, and that really is the whole setup.
-
 ## Writing articles
 
 Create `wiki/Your-Article.md` however you prefer: the web editor, an issue template, or a git push. A few conventions worth following:
